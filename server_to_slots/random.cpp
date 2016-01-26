@@ -77,7 +77,7 @@ bool place_server(Server serv,int row, int left_slot){
   int s = serv.second.first;
 
   // check
-  if(left_slot + s >= Max_Slots) return false;
+  if(left_slot + s > Max_Slots) return false;
   for(int i=0; i<s; i++){
     if(initial_grid[row][left_slot + i] != slot_empty) return false;
   }
@@ -109,7 +109,7 @@ void print_grid_to_file(){
   cout << M << " " << P << " " << R << endl;
   for(int i=1; i<=M; i++){
     if(pos_servers.count(i) > 0){
-      int cap = capacity_server[i];
+      int cap = capacity_server[i-1];
       PII ps = pos_servers[i];
       cout << ps.first << " " << ps.second << " " << cap << endl;
     }else{
