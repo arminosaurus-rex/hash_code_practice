@@ -122,7 +122,7 @@ void print_grid_to_file(){
 */
 void distribute_servers_randomly(){
 
-  unsigned seed = chrono::system_clock::now().time_since_epoch().count();
+  unsigned seed = time(0);
   shuffle(list_of_servers.begin(), list_of_servers.end(), default_random_engine(seed));
 
   int num_server = 0;
