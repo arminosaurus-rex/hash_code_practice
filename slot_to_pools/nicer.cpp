@@ -24,12 +24,11 @@ int evaluate(const Allocation& assign) {
 	for (int dead_row = 0; dead_row < num_rows; ++dead_row) {
 		vector<int> capa_per_pool(num_pools, 0);
 		for (int server_id = 0; server_id < num_servers; ++server_id) {
-			if (servers[server_id].allocated == false ||
-			    servers[server_id].row == dead_row) {
-				continue;
+			if (servers[server_id].allocated &&
+			    servers[server_id].row != dead_row) {
+				int pool = assign[server_id];
+				capa_per_pool[pool] += servers[server_id].capacity;
 			}
-			int pool = assign[server_id];
-			capa_per_pool[pool] += servers[server_id].capacity;
 		}
 		for (int pool = 0; pool < num_pools; ++pool) {
 			global_min = min(capa_per_pool[pool], global_min);
@@ -97,12 +96,12 @@ int main() {
 		sample_assign[i] = i % num_pools;
 	}
 
-	print(sample_assign);
-	cout << evaluate(sample_assign) << endl;
+//	cout << evaluate(sample_assign) << endl;
 	Allocation improved = improvement_step1(sample_assign);
-	cout << evaluate(improved) << endl;
+//	cout << evaluate(improved) << endl;
         improved = improvement_step2(improved);
-	cout << evaluate(improved) << endl;
+//	cout << evaluate(improved) << endl;
+	print(improved);
 
 	return 0;
 }
