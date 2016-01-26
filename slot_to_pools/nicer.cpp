@@ -81,9 +81,11 @@ Allocation improvement_step2(Allocation initial) {
 
 Allocation optimise(Allocation cur) {
 	int value_so_far = evaluate(cur);
+	cout << value_so_far << endl;
 	while (true) {
 		Allocation improved = improvement_step2(improvement_step1(cur));
 		int new_value = evaluate(improved);
+		cout << new_value << endl;
 		assert(new_value >= value_so_far);
 		if (new_value == value_so_far)
 			return cur;
@@ -111,7 +113,6 @@ int main() {
 
 //	cout << evaluate(sample_assign) << endl;
 	Allocation improved = optimise(sample_assign);
-	cout << evaluate(improved) << endl;
 	print(improved);
 
 	return 0;
