@@ -29,7 +29,6 @@ int initial_grid[Max_Rows][Max_Slots];
 
 
 vector<Server> list_of_servers;
-vector<int> capacity_server;
 
 /**
 * Removes all servers placed into the grid, if slots are unavailable, this still remains though
@@ -41,7 +40,6 @@ void reset_initial_grid(){
     }
   }
 }
-
 
 // Reads input into the initial grid and stores the server in the given vector
 void read_input(){
@@ -66,7 +64,6 @@ void read_input(){
     int s, c;
     cin >> s >> c;
     list_of_servers.push_back(make_pair(i, make_pair(s, c)));
-    capacity_server.push_back(c);
   }
 }
 
@@ -109,7 +106,7 @@ void print_grid_to_file(){
   cout << M << " " << P << " " << R << endl;
   for(int i=1; i<=M; i++){
     if(pos_servers.count(i) > 0){
-      int cap = capacity_server[i];
+      int cap = list_of_servers[i].second.second;
       PII ps = pos_servers[i];
       cout << ps.first << " " << ps.second << " " << cap << endl;
     }else{
@@ -118,16 +115,48 @@ void print_grid_to_file(){
   }
 }
 
+
+bool decreasing_relative_capacity(Server serv1, Server serc2){
+  int s1 = serv1.second.first; int c1 = serv1.second.second;
+  int s2 = serv2.second.first; int c2 = serv2.second.second;
+  return (-c1 * s2) > (-c2 * s1);
+}
+
+
 /**
 * Method first shuffles the servers and then tries to place them as leftmost as
 * possible. Writes its output to the initial_grid
 */
-void distribute_servers_randomly(){
+void distribute_servers_evenly(){
 
-  unsigned seed = (unsigned) time(0);
-  shuffle(list_of_servers.begin(), list_of_servers.end(), default_random_engine(seed));
+  sort(list_of_servers.begin(), list_of_servers.end());
+
 
   int num_server = 0;
+  int row = 0;
+
+  while(num_server < M){
+    int rt = row + 1;
+    Server serv = list_of_servers[num_server];
+    while(rt != row){
+      bool found = false;
+      for(int j=0; j<S; j++){
+        if(place_server(serv, rt, j)){
+          num_server += 1;
+          found = true;
+          break;
+        }
+      }
+      if(found){
+        row = (row + 1) % R;
+        break;
+      }else{
+        rt = (rt + 1) % R;
+      }
+    }
+    number_server += 1;
+  }
+
 
   for(int i=0; i<R; i++){
     for(int j=0; j<S; j++){
@@ -146,7 +175,7 @@ void distribute_servers_randomly(){
 int main(){
 
   read_input();
-  distribute_servers_randomly();
+  distribute_servers_evenly();
   print_grid_to_file();
 
   return 0;
