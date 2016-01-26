@@ -29,6 +29,7 @@ int initial_grid[Max_Rows][Max_Slots];
 
 
 vector<Server> list_of_servers;
+vector<int> capacity_server;
 
 /**
 * Removes all servers placed into the grid, if slots are unavailable, this still remains though
@@ -41,10 +42,12 @@ void reset_initial_grid(){
   }
 }
 
+
 // Reads input into the initial grid and stores the server in the given vector
 void read_input(){
   //Makes sure this is empty
   list_of_servers.clear();
+  capacity_server.clear();
 
   cin >> R >> S >> U >> P >> M;
 
@@ -64,6 +67,7 @@ void read_input(){
     int s, c;
     cin >> s >> c;
     list_of_servers.push_back(make_pair(i, make_pair(s, c)));
+    capacity_server.push_back(c);
   }
 }
 
@@ -74,7 +78,7 @@ bool place_server(Server serv,int row, int left_slot){
   int s = serv.second.first;
 
   // check
-  if(left_slot + s >= Max_Slots) return false;
+  if(left_slot + s > S) return false;
   for(int i=0; i<s; i++){
     if(initial_grid[row][left_slot + i] != slot_empty) return false;
   }
@@ -106,7 +110,7 @@ void print_grid_to_file(){
   cout << M << " " << P << " " << R << endl;
   for(int i=1; i<=M; i++){
     if(pos_servers.count(i) > 0){
-      int cap = list_of_servers[i].second.second;
+      int cap = capacity_server[i-1];
       PII ps = pos_servers[i];
       cout << ps.first << " " << ps.second << " " << cap << endl;
     }else{
@@ -116,10 +120,10 @@ void print_grid_to_file(){
 }
 
 
-bool decreasing_relative_capacity(Server serv1, Server serc2){
+bool decreasing_relative_capacity(Server serv1, Server serv2){
   int s1 = serv1.second.first; int c1 = serv1.second.second;
   int s2 = serv2.second.first; int c2 = serv2.second.second;
-  return (-c1 * s2) > (-c2 * s1);
+  return (c1 * s2) > (c2 * s1);
 }
 
 
@@ -129,20 +133,24 @@ bool decreasing_relative_capacity(Server serv1, Server serc2){
 */
 void distribute_servers_evenly(){
 
-  sort(list_of_servers.begin(), list_of_servers.end());
+  sort(list_of_servers.begin(), list_of_servers.end(), decreasing_relative_capacity);
+
+  // for(int i=0; i<list_of_servers.size(); i++){
+  //   cout << list_of_servers[i].second.first << " " << list_of_servers[i].second.second << endl;
+  // }
 
 
   int num_server = 0;
   int row = 0;
 
   while(num_server < M){
-    int rt = row + 1;
+    int rt = (row + 1) % R;
+    //cout << "Hi = " << num_server << " " << rt << " " << row << endl;
     Server serv = list_of_servers[num_server];
     while(rt != row){
       bool found = false;
       for(int j=0; j<S; j++){
         if(place_server(serv, rt, j)){
-          num_server += 1;
           found = true;
           break;
         }
@@ -154,21 +162,7 @@ void distribute_servers_evenly(){
         rt = (rt + 1) % R;
       }
     }
-    number_server += 1;
-  }
-
-
-  for(int i=0; i<R; i++){
-    for(int j=0; j<S; j++){
-      Server cur_serv = list_of_servers[num_server];
-      if(place_server(cur_serv, i, j)){
-          // this is how far we can place
-          j += cur_serv.second.first - 1;
-          num_server += 1;
-          if(num_server == M) break;
-      }
-    }
-    if(num_server == M) break;
+    num_server += 1;
   }
 }
 
