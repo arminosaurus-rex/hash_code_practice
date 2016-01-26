@@ -29,6 +29,7 @@ int initial_grid[Max_Rows][Max_Slots];
 
 
 vector<Server> list_of_servers;
+vector<int> capacity_server;
 
 /**
 * Removes all servers placed into the grid, if slots are unavailable, this still remains though
@@ -65,6 +66,7 @@ void read_input(){
     int s, c;
     cin >> s >> c;
     list_of_servers.push_back(make_pair(i, make_pair(s, c)));
+    capacity_server.push_back(c);
   }
 }
 
@@ -107,7 +109,7 @@ void print_grid_to_file(){
   cout << M << " " << P << " " << R << endl;
   for(int i=1; i<=M; i++){
     if(pos_servers.count(i) > 0){
-      int cap = list_of_servers[i].second.second;
+      int cap = capacity_server[i];
       PII ps = pos_servers[i];
       cout << ps.first << " " << ps.second << " " << cap << endl;
     }else{
@@ -140,9 +142,6 @@ void distribute_servers_randomly(){
     if(num_server == M) break;
   }
 }
-
-
-
 
 int main(){
 
