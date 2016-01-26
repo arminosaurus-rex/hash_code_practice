@@ -79,6 +79,19 @@ Allocation improvement_step2(Allocation initial) {
 	return best_found;
 }
 
+Allocation optimise(Allocation cur) {
+	int value_so_far = evaluate(cur);
+	while (true) {
+		Allocation improved = improvement_step2(improvement_step1(cur));
+		int new_value = evaluate(improved);
+		assert(new_value >= value_so_far);
+		if (new_value == value_so_far)
+			return cur;
+		value_so_far = new_value;
+		cur = improved;
+	}
+}
+
 int main() {
 	cin >> num_servers >> num_pools >> num_rows;
 
@@ -97,10 +110,8 @@ int main() {
 	}
 
 //	cout << evaluate(sample_assign) << endl;
-	Allocation improved = improvement_step1(sample_assign);
-//	cout << evaluate(improved) << endl;
-        improved = improvement_step2(improved);
-//	cout << evaluate(improved) << endl;
+	Allocation improved = optimise(sample_assign);
+	cout << evaluate(improved) << endl;
 	print(improved);
 
 	return 0;
