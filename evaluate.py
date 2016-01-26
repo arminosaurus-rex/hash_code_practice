@@ -44,9 +44,9 @@ for pool in pools:
         break
     rows = defaultdict(int)
     total_capacity = 0
-    for server in pool:
-        rows[server[0]] += server[1]
-        total_capacity += server[1]
+    for server_row, server_capacity in pool:
+        rows[server_row] += server_capacity
+        total_capacity += server_capacity
     guarantee = total_capacity - max(rows.values())
     score = min(score, guarantee)
 
